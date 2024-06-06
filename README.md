@@ -9,7 +9,7 @@ This project is a Flask web application for object detection and image segmentat
 Open your terminal or command prompt and navigate to the project directory. Then create a virtual environment using the following command:
 
 ```bash
-python3 -m venv myenv
+/MY_PATH$python -m venv myenv
 ```
 
 ### 2. Activate the Virtual Environment
@@ -56,7 +56,7 @@ Ensure you have the model files in the models directory:
 Then, run the application:
 
 ```bash
-$python app.py
+/MY_PATH$python app.py
 ```
 
 The application will start running on http://127.0.0.1:5001.
