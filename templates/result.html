@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detection Result</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="header">
+    <h1>Detection Result</h1>
+    <button id="darkModeToggle" class="dark-mode-btn">Dark Mode</button>
+  </header>
+
+  <main class="container">
+    <div class="content-left">
+      <p class="description">{{ result }}</p>
+      <ul>
+        {% for result_image_filename, detected_objects in results %}
+        <li>
+          <p>Detected objects:</p>
+          <ul>
+            {% for obj, confidence in detected_objects %}
+            <li>{{ obj }} - Confidence: {{ '%.2f'|format(confidence) }}</li>
+            {% endfor %}
+          </ul>
+          <img src="{{ url_for('static', filename='uploaded_files/' ~ result_image_filename) }}" alt="Processed Media" class="media-content"/>
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="{{ url_for('index') }}" class="btn-scan">Scan Another File</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2024 DR Co. All rights reserved.</p>
+    <p>Developed DR-G

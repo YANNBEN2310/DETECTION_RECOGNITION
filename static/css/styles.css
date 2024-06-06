@@ -1,0 +1,216 @@
+/* Base styles and resets */
+body, h1, p, a, label, button, video, img {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f4f9;
+  color: #333;
+  line-height: 1.6;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Layout and structure */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 40px;
+  }
+}
+
+.content-left, .content-right {
+  flex: 1;
+  padding: 20px;
+}
+
+.header {
+  position: relative;
+  width: 100%;
+  padding: 20px 40px;
+  box-sizing: border-box;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: #1a202c;
+  margin-bottom: 20px;
+}
+
+.dark-mode-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+/* Media holder styles */
+.media-holder {
+  width: 800px; /* Increased width */
+  height: 450px; /* Increased height */
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background-color: #000; /* Gives a black background to video area */
+}
+
+/* Add to existing CSS */
+.hidden {
+  display: none;
+}
+
+.media-content {
+  width: 100%;
+  height: 100%;
+  display: block; /* Ensure it fits within the container */
+}
+
+/* Button styles */
+.btn-load, .btn-scan {
+  display: inline-block;
+  background-color: #6b46c1;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, background-image 0.2s ease;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.btn-load:hover, .btn-scan:hover {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+.btn-load:active, .btn-scan:active {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+/* Utility and accessibility */
+.hidden {
+  display: none;
+}
+
+/* Footer styles */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+/* Dark theme styles */
+.dark-theme {
+  background-color: #333;
+  color: #ccc;
+}
+
+.dark-theme .header h1,
+.dark-theme .description,
+.dark-theme .footer,
+.dark-theme .dark-mode-btn {
+  color: #ccc;
+}
+
+.dark-theme .btn-load,
+.dark-theme .btn-scan {
+  background-color: #444;
+}
+
+.dark-theme .btn-load:hover,
+.dark-theme .btn-scan:hover {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+.dark-theme .btn-load:active,
+.dark-theme .btn-scan:active {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+/* Button styles */
+.btn-load, .btn-scan {
+  display: inline-block;
+  background-color: #6b46c1;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, background-image 0.2s ease;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 16px;
+  width: 200px;  /* Ensure both buttons have the same width */
+  text-align: center;
+  line-height: 1.6; /* Ensures vertical alignment of text */
+  border: none; /* Remove any border differences */
+}
+
+.btn-load:hover, .btn-scan:hover {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+.btn-load:active, .btn-scan:active {
+  background-image: linear-gradient(to right, blue, red);
+}
+
+/* Ensure the label for the input file looks like a button */
+input[type="file"] {
+  display: none; /* Hide the actual file input */
+}
+
+label[for="fileUpload"].btn-load {
+  line-height: 1.6; /* Match the line-height of the buttons */
+  display: inline-block;
+  text-align: center;
+}
+
+/* Progress bar styles */
+#progressBarContainer {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+#progressBar {
+  width: 0%;
+  height: 20px;
+  background-color: #6b46c1;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  transition: width 0.1s;
+}
+
+#progressText {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+/* Other existing styles */
+/* ... */
+
+
+
+
+
+
