@@ -18,10 +18,15 @@
       <p class="description">
         Our advanced AI technology helps you detect objects in your images and videos with high accuracy and speed.
       </p>
-      <form id="uploadForm" method="post" enctype="multipart/form-data" onsubmit="showProgressBar()">
+      <form id="uploadForm" method="post" enctype="multipart/form-data" action="/">
         <label for="fileUpload" class="btn-load">Load Video/Image</label>
         <input type="file" id="fileUpload" name="file" class="hidden" accept="video/*,image/*" multiple onchange="loadMedia(this)"/>
         <button type="submit" class="btn-scan">Start Detection</button>
+      </form>
+      <form id="optunaForm" method="post" enctype="multipart/form-data" action="/segmentation">
+        <label for="fileUploadOptuna" class="btn-load">Load Image for Segmentation</label>
+        <input type="file" id="fileUploadOptuna" name="file" class="hidden" accept="image/*" multiple onchange="loadMedia(this)"/>
+        <button type="submit" class="btn-scan">Start Scan with Optuna</button>
       </form>
       <div id="progressBarContainer" class="hidden">
         <div id="progressBar"></div>
