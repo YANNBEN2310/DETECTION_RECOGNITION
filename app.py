@@ -11,28 +11,123 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode='eventlet')
 UPLOAD_FOLDER = 'static/uploaded_files'
 TEMP_UPLOAD_FOLDER = 'temp_uploads'  # Temporary upload folder
+MODEL_FOLDER = 'models'  # Folder to save uploaded models
 
-# Create the temporary upload folder if it doesn't exist
+# Create the necessary folders if they don't exist
 os.makedirs(TEMP_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(MODEL_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TEMP_UPLOAD_FOLDER'] = TEMP_UPLOAD_FOLDER
+app.config['MODEL_FOLDER'] = MODEL_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 500  
 
 # Set environment variable for temp directory
 os.environ['TMPDIR'] = app.config['TEMP_UPLOAD_FOLDER']
 
-# Load the pre-trained model for segmentation
-model = tf.keras.models.load_model('models/model.h5')
+# Load the default pre-trained model for segmentation
+model = tf.keras.models.load_model(os.path.join(MODEL_FOLDER, 'model.h5'))
 
 # Load YOLO for object detection
-net = cv2.dnn.readNet("models/yolov4-tiny.weights", "models/yolov4-tiny.cfg")
+net = cv2.dnn.readNet(os.path.join(MODEL_FOLDER, "yolov4-tiny.weights"), os.path.join(MODEL_FOLDER, "yolov4-tiny.cfg"))
 layer_names = net.getLayerNames()
 output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 classes = []
-with open("models/coco.names", "r") as f:
+with open(os.path.join(MODEL_FOLDER, "coco.names"), "r") as f:
     classes = [line.strip() for line in f.readlines()]
+# Map YOLO categories to Font Awesome icons
+category_icon_mapping = {
+    "person": "fas fa-user",
+    "bicycle": "fas fa-bicycle",
+    "car": "fas fa-car",
+    "motorcycle": "fas fa-motorcycle",
+    "airplane": "fas fa-plane",
+    "bus": "fas fa-bus",
+    "train": "fas fa-train",
+    "truck": "fas fa-truck",
+    "boat": "fas fa-ship",
+    "traffic light": "fas fa-traffic-light",
+    "fire hydrant": "fas fa-fire-extinguisher",
+    "stop sign": "fas fa-stop-circle",
+    "parking meter": "fas fa-parking",
+    "bench": "fas fa-chair",
+    "bird": "fas fa-dove",
+    "cat": "fas fa-cat",
+    "dog": "fas fa-dog",
+    "horse": "fas fa-horse",
+    "sheep": "fas fa-sheep",
+    "cow": "fas fa-cow",
+    "elephant": "fas fa-elephant",
+    "bear": "fas fa-bear",
+    "zebra": "fas fa-zebra",
+    "giraffe": "fas fa-giraffe",
+    "backpack": "fas fa-backpack",
+    "umbrella": "fas fa-umbrella",
+    "handbag": "fas fa-handbag",
+    "tie": "fas fa-tie",
+    "suitcase": "fas fa-suitcase",
+    "frisbee": "fas fa-compact-disc",
+    "skis": "fas fa-skiing",
+    "snowboard": "fas fa-snowboarding",
+    "sports ball": "fas fa-basketball-ball",
+    "kite": "fas fa-fighter-jet",
+    "baseball bat": "fas fa-baseball-bat",
+    "baseball glove": "fas fa-baseball-glove",
+    "skateboard": "fas fa-skating",
+    "surfboard": "fas fa-surfing",
+    "tennis racket": "fas fa-table-tennis",
+    "bottle": "fas fa-wine-bottle",
+    "wine glass": "fas fa-wine-glass",
+    "cup": "fas fa-coffee",
+    "fork": "fas fa-utensil-fork",
+    "knife": "fas fa-utensil-knife",
+    "spoon": "fas fa-utensil-spoon",
+    "bowl": "fas fa-bowl",
+    "banana": "fas fa-banana",
+    "apple": "fas fa-apple-alt",
+    "sandwich": "fas fa-sandwich",
+    "orange": "fas fa-orange",
+    "broccoli": "fas fa-broccoli",
+    "carrot": "fas fa-carrot",
+    "hot dog": "fas fa-hotdog",
+    "pizza": "fas fa-pizza",
+    "donut": "fas fa-donut",
+    "cake": "fas fa-cake",
+    "chair": "fas fa-chair",
+    "couch": "fas fa-couch",
+    "potted plant": "fas fa-seedling",
+    "bed": "fas fa-bed",
+    "dining table": "fas fa-table",
+    "toilet": "fas fa-toilet",
+    "tv": "fas fa-tv",
+    "laptop": "fas fa-laptop",
+    "mouse": "fas fa-mouse",
+    "remote": "fas fa-tv-retro",
+    "keyboard": "fas fa-keyboard",
+    "cell phone": "fas fa-mobile-alt",
+    "microwave": "fas fa-microphone",
+    "oven": "fas fa-oven",
+    "toaster": "fas fa-toaster",
+    "sink": "fas fa-sink",
+    "refrigerator": "fas fa-refrigerator",
+    "book": "fas fa-book",
+    "clock": "fas fa-clock",
+    "vase": "fas fa-vase",
+    "scissors": "fas fa-scissors",
+    "teddy bear": "fas fa-bear",
+    "hair drier": "fas fa-wind",
+    "toothbrush": "fas fa-tooth"
+}
+
+# Function to get the Font Awesome class for a given category
+def get_icon(category):
+    return category_icon_mapping.get(category, "fas fa-question")  # Default to a question mark if not found
+
+# Add get_icon to the template context
+@app.context_processor
+def utility_processor():
+    return dict(get_icon=get_icon)
 
 def detect_objects(image):
     height, width, channels = image.shape
@@ -98,22 +193,20 @@ def process_video(video_path):
     cap.release()
     return result_image_path, detected_objects
 
-def segment_image(image_path):
+def segment_image(image_path, model_path=None):
+    global model
+    if model_path:
+        model = tf.keras.models.load_model(model_path)
+    
     original_image = cv2.imread(image_path)
     processed_image = original_image.copy()
     
-    # Resize image to the shape expected by the model
     resized_image = cv2.resize(original_image, (128, 128))
     resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
     resized_image = np.expand_dims(resized_image, axis=0) / 255.0
     
-    # Get predictions from the model
     predictions = model.predict(resized_image)
-    
-    # Convert predictions to class masks
     pred_masks = np.argmax(predictions, axis=-1)[0]
-    
-    # Resize the masks to the original image size
     pred_masks = cv2.resize(pred_masks, (original_image.shape[1], original_image.shape[0]), interpolation=cv2.INTER_NEAREST)
     
     detected_categories = []
@@ -162,19 +255,25 @@ def index():
 
 @app.route('/segmentation', methods=['GET', 'POST'])
 def segmentation():
+    model_path = None
     if request.method == 'POST':
         if 'file' not in request.files:
             return redirect(request.url)
         files = request.files.getlist('file')
         if not files or files[0].filename == '':
             return redirect(request.url)
+        if 'model_file' in request.files:
+            model_file = request.files['model_file']
+            if model_file and model_file.filename != '':
+                model_path = os.path.join(app.config['MODEL_FOLDER'], model_file.filename)
+                model_file.save(model_path)
         results = []
         for file in files:
             with tempfile.NamedTemporaryFile(delete=False, dir=app.config['TEMP_UPLOAD_FOLDER']) as tmp:
                 file_path = tmp.name
                 file.save(file_path)
             if file.filename.split('.')[-1] in ['jpg', 'jpeg', 'png']:
-                result_image_filename, detected_categories = segment_image(file_path)
+                result_image_filename, detected_categories = segment_image(file_path, model_path)
                 results.append((result_image_filename, detected_categories))
             else:
                 result = "Please upload a valid image file for segmentation."

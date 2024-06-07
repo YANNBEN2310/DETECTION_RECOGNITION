@@ -35,26 +35,44 @@ body {
 
 .header {
   position: relative;
+  top: 20px;
   width: 100%;
-  padding: 20px 40px;
+  padding: 20px ;
   box-sizing: border-box;
+  background: url("https://bioscint.com/wp-content/uploads/2021/01/how-the-eye-works-desktop.jpg") no-repeat center center;
+  background-size: cover;
+  border-radius: 50px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0; /* Hide the navbar by default */
+  transition: opacity 0.3s; /* Add a fade-in/fade-out effect */
+}
+
+.header:hover {
+  opacity: 1; /* Show the navbar when it's being hovered over */
 }
 
 .header h1 {
   font-size: 2.5rem;
   color: #1a202c;
   margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.header h1:hover {
+  transform: translateX(-20px);
+  color: transparent;
+  background-clip: text;
 }
 
 .dark-mode-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   padding: 10px 20px;
   background-color: #555;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 0.875rem;
 }
@@ -63,7 +81,7 @@ body {
 .media-holder {
   width: 800px; /* Increased width */
   height: 450px; /* Increased height */
-  border-radius: 16px;
+  border-radius: 40px;
   overflow: hidden;
   position: relative;
   background-color: #000; /* Gives a black background to video area */
@@ -81,93 +99,29 @@ body {
 }
 
 /* Button styles */
-.btn-load, .btn-scan {
+.btn-load, .btn-scan, .btn-load-model {
   display: inline-block;
   background-color: #6b46c1;
   color: white;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 15px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s ease, background-image 0.2s ease;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   margin-bottom: 16px;
-}
-
-.btn-load:hover, .btn-scan:hover {
-  background-image: linear-gradient(to right, blue, red);
-}
-
-.btn-load:active, .btn-scan:active {
-  background-image: linear-gradient(to right, blue, red);
-}
-
-/* Utility and accessibility */
-.hidden {
-  display: none;
-}
-
-/* Footer styles */
-.footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 0.875rem;
-  color: #4a5568;
-}
-
-/* Dark theme styles */
-.dark-theme {
-  background-color: #333;
-  color: #ccc;
-}
-
-.dark-theme .header h1,
-.dark-theme .description,
-.dark-theme .footer,
-.dark-theme .dark-mode-btn {
-  color: #ccc;
-}
-
-.dark-theme .btn-load,
-.dark-theme .btn-scan {
-  background-color: #444;
-}
-
-.dark-theme .btn-load:hover,
-.dark-theme .btn-scan:hover {
-  background-image: linear-gradient(to right, blue, red);
-}
-
-.dark-theme .btn-load:active,
-.dark-theme .btn-scan:active {
-  background-image: linear-gradient(to right, blue, red);
-}
-
-/* Button styles */
-.btn-load, .btn-scan {
-  display: inline-block;
-  background-color: #6b46c1;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s ease, background-image 0.2s ease;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  margin-bottom: 16px;
-  width: 200px;  /* Ensure both buttons have the same width */
+  width: 200px;  /* Ensure all buttons have the same width */
   text-align: center;
   line-height: 1.6; /* Ensures vertical alignment of text */
   border: none; /* Remove any border differences */
 }
 
-.btn-load:hover, .btn-scan:hover {
+.btn-load:hover, .btn-scan:hover, .btn-load-model:hover {
   background-image: linear-gradient(to right, blue, red);
 }
 
-.btn-load:active, .btn-scan:active {
+.btn-load:active, .btn-scan:active, .btn-load-model:active {
   background-image: linear-gradient(to right, blue, red);
 }
 
@@ -176,7 +130,7 @@ input[type="file"] {
   display: none; /* Hide the actual file input */
 }
 
-label[for="fileUpload"].btn-load {
+label[for="fileUpload"].btn-load, label[for="modelUpload"].btn-load-model {
   line-height: 1.6; /* Match the line-height of the buttons */
   display: inline-block;
   text-align: center;
@@ -206,11 +160,46 @@ label[for="fileUpload"].btn-load {
   font-size: 1rem;
 }
 
-/* Other existing styles */
-/* ... */
+/* Utility and accessibility */
+.hidden {
+  display: none;
+}
 
+/* Footer styles */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
 
+/* Dark theme styles */
+.dark-theme {
+  background-color: #333;
+  color: #ccc;
+}
 
+.dark-theme .header h1,
+.dark-theme .description,
+.dark-theme .footer,
+.dark-theme .dark-mode-btn {
+  color: #ccc;
+}
 
+.dark-theme .btn-load,
+.dark-theme .btn-scan,
+.dark-theme .btn-load-model {
+  background-color: #444;
+}
 
+.dark-theme .btn-load:hover,
+.dark-theme .btn-scan:hover,
+.dark-theme .btn-load-model:hover {
+  background-image: linear-gradient(to right, blue, red);
+}
 
+.dark-theme .btn-load:active,
+.dark-theme .btn-scan:active,
+.dark-theme .btn-load-model:active {
+  background-image: linear-gradient(to right, blue, red);
+}
