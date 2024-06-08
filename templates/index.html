@@ -53,6 +53,21 @@
     <p>Developed DR-ROMY</p>
   </footer>
 
+  <nav class="navbar-bottom">
+    <ul class="navbar-bottom-list">
+      <li><a href="#" data-name="Yann" data-link="https://www.linkedin.com/in/yann-b-19a77812b">Yann</a></li>
+      <li><a href="#" data-name="Ophélie" data-link="https://www.linkedin.com/in/oengasser/">Ophélie</a></li>
+      <li><a href="#" data-name="Rym" data-link="https://www.linkedin.com/in/khedoudja-rym-merad/">Rym</a></li>
+      <li><a href="#" data-name="Mike" data-link="https://www.linkedin.com/in/mike-duran-6204141b4/">Mike</a></li>
+    </ul>
+  </nav>
+
+  <div id="profileBox" class="profile-box">
+    <p id="profileName"></p>
+    <p id="profileDescription">View the LinkedIn profile of the selected individual:</p>
+    <a id="profileLink" href="" target="_blank">View LinkedIn Profile</a>
+  </div>
+
   <script src="{{ url_for('static', filename='js/play.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
   <script>
@@ -96,6 +111,32 @@
       if (header.classList.contains('hover-title')) {
         header.classList.remove('hover-title');
         titleWrapper.appendChild(headerTitle);
+      }
+    });
+
+    // JavaScript to handle profile box
+    document.querySelectorAll('.navbar-bottom-list li a').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const profileBox = document.getElementById('profileBox');
+        const profileName = document.getElementById('profileName');
+        const profileLink = document.getElementById('profileLink');
+
+        profileName.textContent = this.dataset.name;
+        profileLink.href = this.dataset.link;
+
+        const rect = this.getBoundingClientRect();
+        profileBox.style.top = `${rect.top - profileBox.offsetHeight - 10}px`;
+        profileBox.style.left = `${rect.left + (rect.width / 2) - (profileBox.offsetWidth / 2)}px`;
+        profileBox.style.display = 'block';
+      });
+    });
+
+    // Hide profile box when clicking outside
+    document.addEventListener('click', function(event) {
+      const profileBox = document.getElementById('profileBox');
+      if (!profileBox.contains(event.target) && !event.target.closest('.navbar-bottom-list li a')) {
+        profileBox.style.display = 'none';
       }
     });
   </script>

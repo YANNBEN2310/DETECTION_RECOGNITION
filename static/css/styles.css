@@ -72,7 +72,7 @@ body {
   background-color: #555;
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 30px;
   cursor: pointer;
   font-size: 0.875rem;
 }
@@ -104,9 +104,9 @@ body {
   background-color: #6b46c1;
   color: white;
   padding: 12px 24px;
-  border-radius: 15px;
+  border-radius: 30px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s ease, background-image 0.2s ease;
+  transition: background-color 0.2s ease, background-image 0.2s ease, transform 0.2s ease;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
@@ -119,10 +119,12 @@ body {
 
 .btn-load:hover, .btn-scan:hover, .btn-load-model:hover {
   background-image: linear-gradient(to right, blue, red);
+  transform: scale(1.1);
 }
 
 .btn-load:active, .btn-scan:active, .btn-load-model:active {
   background-image: linear-gradient(to right, blue, red);
+  transform: scale(1.1);
 }
 
 /* Ensure the label for the input file looks like a button */
@@ -196,10 +198,150 @@ label[for="fileUpload"].btn-load, label[for="modelUpload"].btn-load-model {
 .dark-theme .btn-scan:hover,
 .dark-theme .btn-load-model:hover {
   background-image: linear-gradient(to right, blue, red);
+  transform: scale(1.1);
 }
 
 .dark-theme .btn-load:active,
 .dark-theme .btn-scan:active,
 .dark-theme .btn-load-model:active {
   background-image: linear-gradient(to right, blue, red);
+  transform: scale(1.1);
+}
+.color-square {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* Styles for the bottom navbar */
+.navbar-bottom {
+  position: relative;
+  top: 20px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 50px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 1;
+  transition: opacity 0.3s;
+  animation: backgroundSlider 66s infinite linear;
+}
+
+@keyframes backgroundSlider {
+  0% {
+    background: url("https://wallpaperaccess.com/full/2818794.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  8.33% {
+    background: url("https://wallpaperaccess.com/full/1634044.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  16.66% {
+    background: url("https://wallpaperaccess.com/full/1190949.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  25% {
+    background: url("https://wallpaperaccess.com/full/3337579.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  33.33% {
+    background: url("https://wallpaperaccess.com/full/1351844.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  41.66% {
+    background: url("https://wallpaperaccess.com/full/3337607.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  50% {
+    background: url("https://wallpaperaccess.com/full/3337608.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  58.33% {
+    background: url("https://wallpaperaccess.com/full/3337611.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  66.66% {
+    background: url("https://wallpaperaccess.com/full/3337618.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  75% {
+    background: url("https://wallpaperaccess.com/full/2818795.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  83.33% {
+    background: url("https://wallpaperaccess.com/full/3337656.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  91.66% {
+    background: url("https://wallpaperaccess.com/full/2818794.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  100% {
+    background: url("https://wallpaperaccess.com/full/1634044.jpg") no-repeat center center;
+    background-size: cover;
+  }
+}
+
+.navbar-bottom-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.navbar-bottom-list li {
+  display: inline;
+}
+
+.navbar-bottom-list li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.navbar-bottom-list li a:hover {
+  background-color: #ddd;
+  border-radius: 30px;
+  color: black;
+}
+/* Profile box styles */
+.profile-box {
+  position: absolute;
+  bottom: 60px; /* Adjust as needed to position above the navbar */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px; /* Increased width */
+  height: auto; /* Adjusted height */
+  display: none; /* Hidden by default */
+  z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.profile-box p {
+  margin: 10px 0;
+}
+
+.profile-box a {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  padding: 5px;
+  background-color: #0073b1;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.profile-box a:hover {
+  background-color: #005582;
 }
