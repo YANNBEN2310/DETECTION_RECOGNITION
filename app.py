@@ -117,7 +117,16 @@ category_icon_mapping = {
     "scissors": "fas fa-scissors",
     "teddy bear": "fas fa-bear",
     "hair drier": "fas fa-wind",
-    "toothbrush": "fas fa-tooth"
+    "toothbrush": "fas fa-tooth",
+    # Segmentation categories
+    "void": "fas fa-question",
+    "flat": "fas fa-square",
+    "construction": "fas fa-building",
+    "object": "fas fa-cube",
+    "nature": "fas fa-leaf",
+    "sky": "fas fa-cloud",
+    "human": "fas fa-user",
+    "vehicle": "fas fa-car"
 }
 
 # Function to get the Font Awesome class for a given category
@@ -157,6 +166,7 @@ def detect_objects(image):
 
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
     detected_objects = []
+    colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
     if len(indexes) > 0:
         for i in indexes.flatten():
@@ -164,7 +174,7 @@ def detect_objects(image):
             label = str(classes[class_ids[i]])
             confidence = confidences[i]
             detected_objects.append((label, confidence))
-            color = (0, 255, 0)  # Green color for the rectangle
+            color = [int(c) for c in colors[class_ids[i]]]
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
             cv2.putText(image, f'{label} {confidence:.2f}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
@@ -177,7 +187,8 @@ def process_image(image_path):
     result_image_path = os.path.join(app.config['UPLOAD_FOLDER'], result_image_filename)
     cv2.imwrite(result_image_path, processed_image)
     print(f"Processed image saved at: {result_image_path}")  # Debugging line
-    return result_image_filename, detected_objects
+    num_objects = len(detected_objects)
+    return result_image_filename, detected_objects, num_objects
 
 def process_video(video_path):
     cap = cv2.VideoCapture(video_path)
@@ -193,6 +204,10 @@ def process_video(video_path):
     cap.release()
     return result_image_path, detected_objects
 
+import plotly.express as px
+import plotly.io as pio
+import json
+
 def segment_image(image_path, model_path=None):
     global model
     if model_path:
@@ -206,21 +221,61 @@ def segment_image(image_path, model_path=None):
     resized_image = np.expand_dims(resized_image, axis=0) / 255.0
     
     predictions = model.predict(resized_image)
-    pred_masks = np.argmax(predictions, axis=-1)[0]
+    pred_masks = np.argmax(predictions, axis=-1)  # Enlever [0] ici
+    predicted_confidences = np.max(predictions, axis=-1)  # Extraire les scores de confiance
+
+    # Gestion de la dimension du lot
+    pred_masks = np.squeeze(pred_masks, axis=0)  # Supprimer la dimension du lot si présente
+    predicted_confidences = np.squeeze(predicted_confidences, axis=0)  # Supprimer la dimension du lot si présente
+    
     pred_masks = cv2.resize(pred_masks, (original_image.shape[1], original_image.shape[0]), interpolation=cv2.INTER_NEAREST)
+    predicted_confidences = cv2.resize(predicted_confidences, (original_image.shape[1], original_image.shape[0]), interpolation=cv2.INTER_NEAREST)
+    
+    label_id_to_category_id = {
+        0: 'void',
+        1: 'flat',
+        2: 'construction',
+        3: 'object',
+        4: 'nature',
+        5: 'sky',
+        6: 'human',
+        7: 'vehicle'
+    }
     
     detected_categories = []
+    category_counts = {}
+    color_mapping = {}
+
+    # Utiliser l'analyse des composants connectés pour compter les instances de chaque catégorie
     for category in np.unique(pred_masks):
         mask = pred_masks == category
+        num_labels, labels_im = cv2.connectedComponents(mask.astype(np.uint8))
+
         color = np.random.randint(0, 255, size=(3,), dtype=np.uint8)
         for c in range(3):
             processed_image[:, :, c] = np.where(mask, color[c], processed_image[:, :, c])
-        detected_categories.append((category, mask.mean()))
+        
+        category_name = label_id_to_category_id.get(category, f'Unknown({category})')
+        confidence_score = np.mean(predicted_confidences[mask])
+        detected_categories.append((category, category_name, color.tolist(), confidence_score))
+
+        if category_name not in category_counts:
+            category_counts[category_name] = 0
+        # Soustraire 1 pour ignorer le label de fond
+        category_counts[category_name] += num_labels - 1
+        color_mapping[category_name] = f'rgb({color[0]}, {color[1]}, {color[2]})'
+        print(f"Category: {category_name}, Icon: {get_icon(category_name)}")  # Ligne de débogage
     
     result_image_filename = os.path.basename(image_path) + "_seg.jpg"
     result_image_path = os.path.join(app.config['UPLOAD_FOLDER'], result_image_filename)
     cv2.imwrite(result_image_path, processed_image)
-    return result_image_filename, detected_categories
+
+    original_image_filename = os.path.basename(image_path) + "_orig.jpg"
+    original_image_path = os.path.join(app.config['UPLOAD_FOLDER'], original_image_filename)
+    cv2.imwrite(original_image_path, original_image)
+    
+    return original_image_filename, result_image_filename, detected_categories, category_counts
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -240,18 +295,19 @@ def index():
                     file_path = tmp.name
                     file.save(file_path)
                 result_image_filename, detected_objects = process_video(file_path)
-                results.append((result_image_filename, detected_objects))
+                results.append((result_image_filename, detected_objects, len(detected_objects)))
             elif file.filename.split('.')[-1] in ['jpg', 'jpeg', 'png']:
                 with tempfile.NamedTemporaryFile(delete=False, dir=app.config['TEMP_UPLOAD_FOLDER']) as tmp:
                     file_path = tmp.name
                     file.save(file_path)
-                result_image_filename, detected_objects = process_image(file_path)
-                results.append((result_image_filename, detected_objects))
+                result_image_filename, detected_objects, num_objects = process_image(file_path)
+                results.append((result_image_filename, detected_objects, num_objects))
             else:
                 result = "Please upload a valid video or image file for detection."
                 return render_template('result.html', result=result, results=[])
         return render_template('result.html', result="Detection Complete", results=results)
     return render_template('index.html')
+
 
 @app.route('/segmentation', methods=['GET', 'POST'])
 def segmentation():
@@ -273,13 +329,14 @@ def segmentation():
                 file_path = tmp.name
                 file.save(file_path)
             if file.filename.split('.')[-1] in ['jpg', 'jpeg', 'png']:
-                result_image_filename, detected_categories = segment_image(file_path, model_path)
-                results.append((result_image_filename, detected_categories))
+                original_image_filename, result_image_filename, detected_categories, category_counts = segment_image(file_path, model_path)
+                results.append((original_image_filename, result_image_filename, detected_categories, category_counts))
             else:
                 result = "Please upload a valid image file for segmentation."
                 return render_template('segmentation.html', result=result, results=[])
         return render_template('segmentation.html', result="Segmentation Complete", results=results)
     return render_template('segmentation.html')
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port=5001)

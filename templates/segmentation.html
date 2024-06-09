@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Segmentation Result</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <script>
-    // JavaScript code to toggle the hover-title class and move the header-title element
     const headerTitle = document.querySelector('.header-title');
     const titleWrapper = document.querySelector('.title-wrapper');
     const header = document.querySelector('.header');
@@ -47,12 +47,24 @@
     <div class="content-left">
       <p class="description">{{ result }}</p>
       <ul>
-        {% for result_image_filename, detected_categories in results %}
+        {% for original_image_filename, result_image_filename, detected_categories, category_counts in results %}
         <li>
-          <img src="{{ url_for('static', filename='uploaded_files/' + result_image_filename) }}" alt="Segmented Media" class="media-content"/>
+          <div style="display: flex;">
+            <img src="{{ url_for('static', filename='uploaded_files/' + original_image_filename) }}" alt="Original Media" class="media-content" style="width: 45%; margin-right: 5%;">
+            <img src="{{ url_for('static', filename='uploaded_files/' + result_image_filename) }}" alt="Segmented Media" class="media-content" style="width: 45%;">
+          </div>
           <ul>
-            {% for category, accuracy in detected_categories %}
-            <li>{{ category }} - Accuracy: {{ '%.2f'|format(accuracy) }}</li>
+            {% for index, category_name, color, confidence_score in detected_categories %}
+            <li>
+              <span class="color-square" style="display: inline-block; width: 20px; height: 20px; background-color: rgb({{ color[0] }}, {{ color[1] }}, {{ color[2] }});"></span>
+              <i class="{{ get_icon(category_name) }}"></i> Index: {{ index }} - Label: {{ category_name }} - Confidence Score: {{ '%.2f'|format(confidence_score) }}
+            </li>
+            {% endfor %}
+          </ul>
+          <p>Detected Labels Count:</p>
+          <ul>
+            {% for label, count in category_counts.items() %}
+            <li>{{ label }}: {{ count }}</li>
             {% endfor %}
           </ul>
         </li>
@@ -64,4 +76,19 @@
 
   <footer class="footer">
     <p>© 2024 DR Co. All rights reserved.</p>
-    
+  </footer>
+  
+  <nav class="navbar-bottom">
+    <ul class="navbar-bottom-list">
+      <li><a href="#">Yann</a></li>
+      <li><a href="#">Ophélie</a></li>
+      <li><a href="#">Rym</a></li>
+      <li><a href="#">Mike</a></li>
+    </ul>
+  </nav>
+
+
+  <script src="{{ url_for('static', filename='js/play.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+</body>
+</html>
