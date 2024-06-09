@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 import cv2
 import numpy as np
+import eventlet
+import eventlet.wsgi
 import os
 import tempfile
 import tensorflow as tf
@@ -338,5 +340,6 @@ def segmentation():
     return render_template('segmentation.html')
 
 
-if __name__ == '__main__':
-    socketio.run(app, debug=True, port=5001)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001)
+
